@@ -6,23 +6,27 @@ import Squirrel from '@/public/squirrel-lol.png'
 
 const initialJokes = [
   {
-    id: 1,
+    id: generateRandomString(),
     content:
       'An electron walks into a bar and asks, how much for a beer. The bartender says, for you, free of charge.',
     highlight: 'free of charge.',
   },
   {
-    id: 2,
+    id: generateRandomString(),
     content:
       'Wie viele Programmierer sind nötig, um eine kaputte Glühbirne auszuwechseln? - Keine. Das ist ein Hardwareproblem.',
     highlight: 'Hardwareproblem.',
   },
   {
-    id: 3,
+    id: generateRandomString(),
     content: '— Ты кто по профессии? — Блогер. — Я тоже ничего не умею ...',
     highlight: 'ничего не умею ...',
   },
 ]
+
+function generateRandomString() {
+  return Math.random().toString(36).substring(2)
+}
 
 export default function Home() {
   const [jokes, setJokes] = useState(initialJokes)
