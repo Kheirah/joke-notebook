@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import clsx from 'clsx'
 import Image from 'next/image'
 import Squirrel from '@/public/squirrel-lol.png'
 
@@ -42,6 +43,42 @@ export default function Home() {
     setJoke({ id: generateRandomString(), content: '', highlight: '' })
   }
 
+  function makeMeBeautiful({ content, highlight }) {
+    const emojis = ['😭', '😁', '😍', '😆']
+
+    if (makeMeBeautiful.current === undefined) makeMeBeautiful.current = 0
+    else makeMeBeautiful.current = ++makeMeBeautiful.current % 4
+
+    const start = content.indexOf(highlight)
+    const before = content.substring(0, start)
+    const after = content.substring(start + highlight.length)
+
+    return (
+      <p
+        key={generateRandomString()}
+        className="relative rounded-md bg-slate-600 p-2"
+      >
+        {before}
+        {highlight && (
+          <span
+            className={clsx('inline-block -rotate-2 rounded-sm p-2', {
+              'bg-amber-500': makeMeBeautiful.current === 0,
+              'bg-sky-500': makeMeBeautiful.current === 1,
+              'bg-green-500': makeMeBeautiful.current === 2,
+              'bg-teal-500': makeMeBeautiful.current === 3,
+            })}
+          >
+            {highlight}
+          </span>
+        )}
+        {after}
+        <span className="absolute -right-2 -top-3">
+          {emojis[makeMeBeautiful.current]}
+        </span>
+      </p>
+    )
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center space-y-8 bg-gray-900 p-24">
       <h1 className="relative mb-10 text-3xl font-bold">
@@ -59,14 +96,13 @@ export default function Home() {
         width="400"
       />
 
-      {jokes.map((individualJoke) => (
-        <div key={individualJoke.id}>{individualJoke.content}</div>
-      ))}
+      {jokes.map((individualJoke) => makeMeBeautiful(individualJoke))}
 
       <form className="space-y-3" onSubmit={handleAddJoke}>
         <label htmlFor="joke" className="block">
           Enter your joke
         </label>
+
         <input
           id="joke"
           type="text"
@@ -76,6 +112,7 @@ export default function Home() {
           }
           className="rounded-md px-2 py-1 leading-8 text-black"
         />
+
         <button
           type="submit"
           className="ml-2 rounded-md bg-gray-200 px-6 py-2 font-medium text-black"
@@ -84,7 +121,24 @@ export default function Home() {
         </button>
       </form>
 
-      {/* Preview */}
+      <div>
+        <div>{joke.content ? 'Preview' : 'type something ...'}</div>
+        <div
+          className="relative rounded-md bg-slate-600 p-2"
+          onMouseUp={() =>
+            setJoke({
+              ...joke,
+              highlight: window.getSelection().toString(),
+            })
+          }
+        >
+          {joke.content && (
+            <span className="rounded-sm selection:bg-red-500">
+              {makeMeBeautiful(joke)}
+            </span>
+          )}
+        </div>
+      </div>
     </main>
   )
 }
