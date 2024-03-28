@@ -1,5 +1,8 @@
 'use client'
 
+import Image from 'next/image'
+import Squirrel from '@/public/squirrel-lol.png'
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center space-y-8 bg-gray-900 p-24">
@@ -10,6 +13,14 @@ export default function Home() {
         </span>
         <span className="absolute -right-5 -top-5 rotate-12">🤣</span>
       </h1>
+
+      <Image
+        src={Squirrel}
+        alt="squirrel laughing in front of laptop"
+        className="rounded-md"
+        width="400"
+      />
+
       {/* Jokes */}
       {/* Form */}
       {/* Preview */}
