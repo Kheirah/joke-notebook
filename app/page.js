@@ -30,6 +30,17 @@ function generateRandomString() {
 
 export default function Home() {
   const [jokes, setJokes] = useState(initialJokes)
+  const [joke, setJoke] = useState({
+    id: generateRandomString(),
+    content: '',
+    highlight: '',
+  })
+
+  function handleAddJoke(event) {
+    event.preventDefault()
+    setJokes([...jokes, joke])
+    setJoke({ id: generateRandomString(), content: '', highlight: '' })
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center space-y-8 bg-gray-900 p-24">
@@ -52,7 +63,27 @@ export default function Home() {
         <div key={individualJoke.id}>{individualJoke.content}</div>
       ))}
 
-      {/* Form */}
+      <form className="space-y-3" onSubmit={handleAddJoke}>
+        <label htmlFor="joke" className="block">
+          Enter your joke
+        </label>
+        <input
+          id="joke"
+          type="text"
+          value={joke.content}
+          onChange={(event) =>
+            setJoke({ ...joke, content: event.target.value, highlight: '' })
+          }
+          className="rounded-md px-2 py-1 leading-8 text-black"
+        />
+        <button
+          type="submit"
+          className="ml-2 rounded-md bg-gray-200 px-6 py-2 font-medium text-black"
+        >
+          Add
+        </button>
+      </form>
+
       {/* Preview */}
     </main>
   )
