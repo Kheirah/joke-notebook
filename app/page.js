@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import clsx from 'clsx'
 import Image from 'next/image'
 import Squirrel from '@/public/squirrel-lol.png'
 
@@ -28,18 +29,49 @@ function generateRandomString() {
   return Math.random().toString(36).substring(2)
 }
 
+function getEmojiAndColor(index) {
+  const emojis = ['😭', '😁', '😍', '😆']
+  const colors = ['bg-amber-500', 'bg-sky-500', 'bg-green-500', 'bg-teal-500']
+  return {
+    emoji: emojis[index],
+    color: colors[index],
+  }
+}
+
+function makeMeBeautiful({ content, highlight }, index) {
+  const { emoji, color } = getEmojiAndColor(index % 4)
+
+  const [before, after] = content.split(highlight)
+
+  return (
+    <p
+      key={generateRandomString()}
+      className="relative rounded-md bg-slate-600 p-2"
+    >
+      {before}
+      {highlight && (
+        <span className={clsx('inline-block -rotate-2 rounded-sm p-2', color)}>
+          {highlight}
+        </span>
+      )}
+      {after}
+      <span className="absolute -right-2 -top-3">{emoji}</span>
+    </p>
+  )
+}
+
 export default function Home() {
   const [jokes, setJokes] = useState(initialJokes)
   const [joke, setJoke] = useState({
     id: generateRandomString(),
     content: '',
-    highlight: '',
+    highlight: undefined,
   })
 
   function handleAddJoke(event) {
     event.preventDefault()
     setJokes([...jokes, joke])
-    setJoke({ id: generateRandomString(), content: '', highlight: '' })
+    setJoke({ id: generateRandomString(), content: '', highlight: undefined })
   }
 
   return (
@@ -59,23 +91,29 @@ export default function Home() {
         width="400"
       />
 
-      {jokes.map((individualJoke) => (
-        <div key={individualJoke.id}>{individualJoke.content}</div>
-      ))}
+      {jokes.map((individualJoke, index) =>
+        makeMeBeautiful(individualJoke, index),
+      )}
 
       <form className="space-y-3" onSubmit={handleAddJoke}>
         <label htmlFor="joke" className="block">
           Enter your joke
         </label>
+
         <input
           id="joke"
           type="text"
           value={joke.content}
           onChange={(event) =>
-            setJoke({ ...joke, content: event.target.value, highlight: '' })
+            setJoke({
+              ...joke,
+              content: event.target.value,
+              highlight: undefined,
+            })
           }
           className="rounded-md px-2 py-1 leading-8 text-black"
         />
+
         <button
           type="submit"
           className="ml-2 rounded-md bg-gray-200 px-6 py-2 font-medium text-black"
@@ -84,7 +122,24 @@ export default function Home() {
         </button>
       </form>
 
-      {/* Preview */}
+      <div>
+        <div>{joke.content ? 'Preview' : 'type something ...'}</div>
+        <div
+          className="relative rounded-md bg-slate-600 p-2"
+          onMouseUp={() =>
+            setJoke({
+              ...joke,
+              highlight: window.getSelection().toString(),
+            })
+          }
+        >
+          {joke.content && (
+            <span className="rounded-sm selection:bg-red-500">
+              {makeMeBeautiful(joke, jokes.length)}
+            </span>
+          )}
+        </div>
+      </div>
     </main>
   )
 }
